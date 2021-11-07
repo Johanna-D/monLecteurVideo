@@ -8,59 +8,79 @@ const getBaseURL = () => {
 let style = `
 html {
     background-color: brown;
+    background: url(./assets/fond.jpg) no-repeat center fixed; 
+  -webkit-background-size: cover; /* pour anciens Chrome et Safari */
+  background-size: cover; /* version standardisée */
 }
 
-
-#infos {
-    width:100%;
-    height: 30%;
-    margin: 0 auto;
-    text-align: center;
+#player{
+    width:80%;
+    box-shadow: 0px 0px 5px black;
 }
 
-#videoDiv, #commandesDiv, #audioDiv, #ondeDiv {
-    background-color: burlywood;
+#videoDiv, #playlist {
+    background-color: #636363;
     width: 30%;
     box-shadow: 0px 0px 8px black;
+    padding-top: 20px;
+    margin-top: 30px;
+    height: 80%;
+    overflow:auto;
     
 }
 #videoDiv {
-    margin: 0 auto;
+    
+    
     text-align: center;
+    float: left;
+    height: 80%;
+    margin-left: 20%;
+    border-top-right-radius: 80px 80px;
+    border-bottom-left-radius: 80px 80px;
 }
-#commandesDiv, #audioDiv, #ondeDiv {
-    float:left;
-    height : 100%;
-    margin: 1%;
+#video0,#video1, #video2, #video3 {
+    width : 60%;
+    margin-left: 5%;
+    margin-top:3%;
+    box-shadow: 0px 0px 5px black;
+}
+#video0:hover, #video1:hover, #video2:hover, #video3:hover {
+    opacity: 0.5;
+}
+ #playlist {
+    float:right;
+    text-align: center;
+    width : 20%;
+    margin-right: 20%;
+    overflow:auto;
+    border-top-left-radius: 80px 80px;
+    border-bottom-right-radius: 80px 80px;
+    
     
 }
 h1 {
     font-size : 20px;
-    background-color : rgba(165, 42, 42, 0.555);
+    background-color : #AFAFAF;
     text-align: center;
+}
+input:hover{
+    opacity: 0.5;
 }
 `;
 let template = /*html*/`
   <div id="videoDiv">
-  <video id="player"  >
-      <br>
+  <h1>Lecteur vidéo</h1>
+  <video id="player" >
+      
   </video>
   
   <p><span id="currentTime">0</span><span> / </span><span id="duree"></span></p>
   
-  <button id="play">PLAY</button>
-  <button id="pause">PAUSE</button>
-  </div>
+  <input id="play" type="image" src="./assets/play.png"  width="48" height="48" alt="submit"/>
+  <input id="pause" type="image" src="./assets/pause.png"  width="48" height="48" alt="submit"/>
+  <input id="avance10" type="image" src="./assets/avancer.png"  width="48" height="48" alt="submit"/>
+  <input id="recule10" type="image" src="./assets/reculer.png"  width="48" height="48" alt="submit"/>
   <br>
-
-
-  <div id="infos">
-
-
-  <div id="commandesDiv">
-  <h1>Commandes vidéo</h1>
-  <button id="avance10">Avancer</button>
-  <button id="recule10">Reculer</button>
   <webaudio-switch id="speed" src="./assets/switch_toggle.png" 
     width="64" height="64"> Accélérer
   </webaudio-switch>
@@ -70,48 +90,14 @@ let template = /*html*/`
   
   <webaudio-knob id="volume" min=0 max=1 value=0.5 step="0.01" 
          tooltip="%s" diameter="50" src="./assets/Aqua.png" sprites="100">Volume</webaudio-knob>
-
   </div>
-
-
-  <div id="audioDiv">
-        <h1>Egaliseur fréquences</h1>
-         <div class="controls">
-         <label>60Hz</label>
-         <input type="range" value="0" step="1" min="-30" max="30" oninput="changeGain(this.value, 0);"></input>
-       <output id="gain0">0 dB</output>
-       </div>
-       <div class="controls">
-         <label>170Hz</label>
-         <input type="range" value="0" step="1" min="-30" max="30" oninput="changeGain(this.value, 1);"></input>
-     <output id="gain1">0 dB</output>
-       </div>
-       <div class="controls">
-         <label>350Hz</label>
-         <input type="range" value="0" step="1" min="-30" max="30" oninput="changeGain(this.value, 2);"></input>
-     <output id="gain2">0 dB</output>
-       </div>
-       <div class="controls">
-         <label>1000Hz</label>
-         <input type="range" value="0" step="1" min="-30" max="30" oninput="changeGain(this.value, 3);"></input>
-     <output id="gain3">0 dB</output>
-       </div>
-       <div class="controls">
-         <label>3500Hz</label>
-         <input type="range" value="0" step="1" min="-30" max="30" oninput="changeGain(this.value, 4);"></input>
-     <output id="gain4">0 dB</output>
-       </div>
-       <div class="controls">
-         <label>10000Hz</label>
-         <input type="range" value="0" step="1" min="-30" max="30" oninput="changeGain(this.value, 5);"></input>
-     <output id="gain5">0 dB</output>
-       </div>
-
-       </div>
-
-       <div id="ondeDiv">
-       <h1>Visuel fréquences</h1>
-       <p> Mettre ici la wave... </p>
+ 
+       <div id="playlist">
+       <h1>Playlist</h1>
+       <video id="video0" src="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"> </video><br>
+       <video id="video1" src="./assets/chat.mp4"> </video><br>
+       <video id="video2" src="./assets/nature.mp4"> </video><br>
+       <video id="video3" src="./assets/musique.mp4"> </video>
        </div>
 
        </div>
@@ -149,8 +135,6 @@ class MyVideoPlayer extends HTMLElement {
         // déclarer les écouteurs sur les boutons
         this.definitEcouteurs();
 
-        // création de l'equalizer 
-        this.creationEqualizer();
         
     }
 
@@ -174,6 +158,22 @@ class MyVideoPlayer extends HTMLElement {
         this.shadowRoot.querySelector("#slow").onclick = (event) => {
             this.slow(event);
         }
+        this.shadowRoot.querySelector("#video0").onclick = (event) => {
+            this.player.src = this.shadowRoot.querySelector("#video0").src;
+            this.play();
+        }
+        this.shadowRoot.querySelector("#video1").onclick = (event) => {
+            this.player.src = this.shadowRoot.querySelector("#video1").src;
+            this.play();
+        }
+        this.shadowRoot.querySelector("#video2").onclick = (event) => {
+            this.player.src = this.shadowRoot.querySelector("#video2").src;
+            this.play();
+        }
+        this.shadowRoot.querySelector("#video3").onclick = (event) => {
+            this.player.src = this.shadowRoot.querySelector("#video3").src;
+            this.play();
+        }
 
         this.shadowRoot.querySelector("#volume").oninput = (event) => {
             const vol = parseFloat(event.target.value);
@@ -187,50 +187,8 @@ class MyVideoPlayer extends HTMLElement {
           };
     }
 
-    creationEqualizer(){
-        //buil an equalizer with multiple biquad filters
-
-        var ctx = window.AudioContext || window.webkitAudioContext;
-        var context = new ctx();
-
-        var mediaElement = this.player;
-        var sourceNode = context.createMediaElementSource(mediaElement);
-        mediaElement.onplay = function() {
-        context.resume();
-        }
-        // create the equalizer. It's a set of biquad Filters
-
-        var filters = [];
-
-            // Set filters
-        [60, 170, 350, 1000, 3500, 10000].forEach(function(freq, i) {
-            var eq = context.createBiquadFilter();
-            eq.frequency.value = freq;
-            eq.type = "peaking";
-            eq.gain.value = 0;
-            filters.push(eq);
-        });
-
-        // Connect filters in serie
-        sourceNode.connect(filters[0]);
-        for(var i = 0; i < filters.length - 1; i++) {
-            filters[i].connect(filters[i+1]);
-            }
-
-        // connect the last filter to the speakers
-        filters[filters.length - 1].connect(context.destination);
-    }
-
-        
-    changeGain(sliderVal,nbFilter) {
-        var value = parseFloat(sliderVal);
-        filters[nbFilter].gain.value = value;
-        
-        // update output labels
-        var output = document.querySelector("#gain"+nbFilter);
-        output.value = value + " dB";
-    }
-
+    
+   
     // API de mon composant
     play() {
         this.player.play();
